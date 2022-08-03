@@ -127,6 +127,36 @@ public class ParkingControllerTest extends AbstractContainerBase {
     }
 
     @Test
+    void whenCheckOutThenTestIsCheckedOut() {
+        ParkingCreateDTO parkingCreateDTO = new ParkingCreateDTO();
+        parkingCreateDTO.setColor("AMARELO");
+        parkingCreateDTO.setLicense("WRT-5555");
+        parkingCreateDTO.setModel("BRASILIA");
+        parkingCreateDTO.setState("SP");
+
+        String id = RestAssured.given()
+                .when()
+                .auth().basic("user", "12345")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(parkingCreateDTO)
+                .post("/parking")
+                .then()
+                .extract().path("id");
+
+        System.out.println("id:" + id);
+
+        RestAssured.given()
+                .when()
+                .auth().basic("user", "12345")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(parkingCreateDTO)
+                .post("/parking/" + id + "/exit")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("exitDate", Matchers.notNullValue());
+    }
+
+    @Test
     void whenDeleteThenTestIsDeleted() {
         ParkingCreateDTO parkingCreateDTO = new ParkingCreateDTO();
         parkingCreateDTO.setColor("AMARELO");
