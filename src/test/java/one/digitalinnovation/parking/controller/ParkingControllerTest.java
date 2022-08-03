@@ -32,6 +32,50 @@ public class ParkingControllerTest extends AbstractContainerBase {
     }
 
     @Test
+    void whenFindByIdThenCheckResult() {
+        ParkingCreateDTO parkingCreateDTO = new ParkingCreateDTO();
+        parkingCreateDTO.setColor("AMARELO");
+        parkingCreateDTO.setLicense("WRT-5555");
+        parkingCreateDTO.setModel("BRASILIA");
+        parkingCreateDTO.setState("SP");
+
+        String id = RestAssured.given()
+                .when()
+                .auth().basic("user", "12345")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(parkingCreateDTO)
+                .post("/parking")
+                .then()
+                .extract().path("id");
+
+        System.out.println("id:" + id);
+
+        RestAssured.given()
+                .auth().basic("user", "12345")
+                .when()
+                .get("/parking/" + id)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("license", Matchers.equalTo("WRT-5555"))
+                .body("color", Matchers.equalTo("AMARELO"));
+    }
+
+    @Test
+    void whenFindByIdWithInvalidIdThenCheckResult() {
+
+        String id = "asdf45d";
+
+        System.out.println("id:" + id);
+
+        RestAssured.given()
+                .auth().basic("user", "12345")
+                .when()
+                .get("/parking/" + id)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
     void whenCreateThenTestIsCreated() {
         ParkingCreateDTO parkingCreateDTO = new ParkingCreateDTO();
         parkingCreateDTO.setColor("AMARELO");
@@ -49,5 +93,62 @@ public class ParkingControllerTest extends AbstractContainerBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .body("license", Matchers.equalTo("WRT-5555"))
                 .body("color", Matchers.equalTo("AMARELO"));
+    }
+
+    @Test
+    void whenUpdateThenTestIsUpdated() {
+        ParkingCreateDTO parkingCreateDTO = new ParkingCreateDTO();
+        parkingCreateDTO.setColor("AMARELO");
+        parkingCreateDTO.setLicense("WRT-5555");
+        parkingCreateDTO.setModel("BRASILIA");
+        parkingCreateDTO.setState("SP");
+
+        String id = RestAssured.given()
+                .when()
+                .auth().basic("user", "12345")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(parkingCreateDTO)
+                .post("/parking")
+                .then()
+                .extract().path("id");
+
+        System.out.println("id:" + id);
+
+        RestAssured.given()
+                .when()
+                .auth().basic("user", "12345")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(parkingCreateDTO)
+                .put("/parking/" + id)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("license", Matchers.equalTo("WRT-5555"))
+                .body("color", Matchers.equalTo("AMARELO"));
+    }
+
+    @Test
+    void whenDeleteThenTestIsDeleted() {
+        ParkingCreateDTO parkingCreateDTO = new ParkingCreateDTO();
+        parkingCreateDTO.setColor("AMARELO");
+        parkingCreateDTO.setLicense("WRT-5555");
+        parkingCreateDTO.setModel("BRASILIA");
+        parkingCreateDTO.setState("SP");
+
+        String id = RestAssured.given()
+                .when()
+                .auth().basic("user", "12345")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(parkingCreateDTO)
+                .post("/parking")
+                .then()
+                .extract().path("id");
+
+        System.out.println("id:" + id);
+
+        RestAssured.given()
+                .when()
+                .auth().basic("user", "12345").delete("/parking/" + id)
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }
