@@ -2,6 +2,9 @@ package one.digitalinnovation.parking.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import one.digitalinnovation.parking.controller.dto.ParkingCreateDTO;
+import one.digitalinnovation.parking.controller.dto.ParkingDTO;
+import one.digitalinnovation.parking.controller.mapper.ParkingMapper;
 import one.digitalinnovation.parking.model.Parking;
 import one.digitalinnovation.parking.service.ParkingService;
 import org.springframework.http.HttpStatus;
@@ -16,21 +19,25 @@ import java.util.List;
 public class ParkingController {
 
     private final ParkingService parkingService;
+    private final ParkingMapper parkingMapper;
 
-    public ParkingController(ParkingService parkingService) {
+    public ParkingController(ParkingService parkingService, ParkingMapper parkingMapper) {
         this.parkingService = parkingService;
+        this.parkingMapper = parkingMapper;
     }
 
     @GetMapping
     @ApiOperation("Find all parkings")
-    public ResponseEntity<List<Parking>> findAll() {
-        List<Parking> result = parkingService.findAll();
+    public ResponseEntity<List<ParkingDTO>> findAll() {
+        List<Parking> parkingList = parkingService.findAll();
+        List<ParkingDTO> result = parkingMapper.toParkingDTOList(parkingList);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Parking> findById(@PathVariable String id) {
-        Parking result = parkingService.findById(id);
+    public ResponseEntity<ParkingDTO> findById(@PathVariable String id) {
+        Parking parking = parkingService.findById(id);
+        ParkingDTO result = parkingMapper.toParkingDTO(parking);
         return ResponseEntity.ok(result);
     }
 
@@ -41,15 +48,18 @@ public class ParkingController {
     }
 
     @PostMapping
-    public ResponseEntity<Parking> create(@RequestBody Parking parking) {
-        Parking result = parkingService.create(parking);
+    public ResponseEntity<ParkingDTO> create(@RequestBody ParkingCreateDTO dto) {
+        Parking parkingCreate = parkingMapper.toParkingCreate(dto);
+        Parking parking = parkingService.create(parkingCreate);
+        ParkingDTO result = parkingMapper.toParkingDTO(parking);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Parking> update(@PathVariable String id, @RequestBody Parking parking) {
-        Parking result = parkingService.update(id, parking);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<ParkingDTO> update(@PathVariable String id, @RequestBody ParkingCreateDTO parkingCreateDTO) {
+        Parking parkingUpdate = parkingMapper.toParkingCreate(parkingCreateDTO);
+        Parking parking = parkingService.update(id, parkingUpdate);
+        return ResponseEntity.ok(parkingMapper.toParkingDTO(parking));
     }
 
 
