@@ -12,6 +12,9 @@ As credenciais usadas para autorização são: user - nome do usuário e 12345 -
 Para isso, ela conta com as rotas de criar, atualizar, listar vagas, recuperar e deletar uma vaga. Além desse CRUD, também tem a rota de registrar a saída de um carro de uma vaga junto com a realização do cálculo do valor com base no tempo que o veículo ficou nessa vaga. Eu também adicionei a esse projeto ao escrever os testes do CRUD junto ao teste do serviço de calcular o valor da vaga.
 A aplicação também conta com autorização e autenticação de usuários com Spring Security.
 
+## Container do Banco:
+Para executar os testes, você precisa baixar o container do banco através do seguinte comando do Docker: ```docker run --name parking-db -p 5432:5432 -e POSTGRES_DB=parking -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=123 -d postgres:10-alpine```
+
 Clique [aqui](https://parking-josedav.herokuapp.com/swagger-ui.html) para testar as rotas: 
 As credenciais usadas para autorização são: user - nome do usuário e 12345 - a senha.
 
