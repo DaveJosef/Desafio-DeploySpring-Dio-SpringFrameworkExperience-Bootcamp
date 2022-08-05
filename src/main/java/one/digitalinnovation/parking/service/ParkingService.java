@@ -1,5 +1,6 @@
 package one.digitalinnovation.parking.service;
 
+import one.digitalinnovation.parking.exception.ParkingAlreadyClosedException;
 import one.digitalinnovation.parking.exception.ParkingNotFoundException;
 import one.digitalinnovation.parking.model.Parking;
 import one.digitalinnovation.parking.repository.ParkingRepository;
@@ -58,6 +59,9 @@ public class ParkingService {
     @Transactional
     public Parking checkOut(String id) {
         Parking parking = findById(id);
+        if (parking.getExitDate() != null) {
+            throw new ParkingAlreadyClosedException(id);
+        }
         parking.setExitDate(LocalDateTime.now());
         parking.setBill(ParkingCheckOut.getBill(parking));
         return parkingRepository.save(parking);
